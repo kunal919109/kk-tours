@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Profile — KK Tours</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .profile-grid{display:grid;grid-template-columns:280px 1fr;gap:2rem;align-items:start}
+    .profile-sidebar{background:white;border-radius:var(--radius-lg);padding:2rem;box-shadow:var(--shadow-sm);text-align:center;border:1px solid rgba(0,0,0,.05)}
+    .avatar{width:80px;height:80px;border-radius:50%;background:var(--grad-primary);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800;color:white;margin:0 auto 1.25rem;box-shadow:var(--shadow-blue)}
+    .profile-sidebar h3{font-size:1.1rem;font-weight:700;color:var(--dark)}
+    .profile-sidebar p{color:var(--gray);font-size:.82rem;margin-top:.2rem}
+    .role-badge{display:inline-block;background:var(--primary-light);color:var(--primary-dark);padding:.28rem .85rem;border-radius:50px;font-size:.72rem;font-weight:700;margin-top:.75rem;text-transform:uppercase;letter-spacing:.5px}
+    .profile-nav{margin-top:1.75rem;display:flex;flex-direction:column;gap:.25rem}
+    .pnav-btn{display:flex;align-items:center;gap:.7rem;padding:.7rem 1rem;border-radius:var(--radius-sm);font-weight:600;font-size:.85rem;color:var(--gray);cursor:pointer;transition:var(--transition);border:none;background:none;width:100%;text-align:left;font-family:"Inter",sans-serif}
+    .pnav-btn:hover{background:var(--lighter);color:var(--dark)}
+    .pnav-btn.active{background:var(--primary-light);color:var(--primary-dark)}
+    .profile-main{display:flex;flex-direction:column;gap:1.5rem}
+    .profile-card{background:white;border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow-sm);border:1px solid rgba(0,0,0,.05)}
+    .profile-card h3{font-size:.95rem;font-weight:700;margin-bottom:1.4rem;padding-bottom:.85rem;border-bottom:1px solid var(--lighter);color:var(--dark)}
+    .info-row{display:flex;justify-content:space-between;align-items:center;padding:.7rem 0;border-bottom:1px solid var(--lighter);font-size:.85rem}
+    .info-row:last-child{border-bottom:none}
+    .info-row .lbl{color:var(--gray);font-weight:500}
+    .info-row .val{font-weight:600;color:var(--dark)}
+    .tab-section{display:none}
+    .tab-section.active{display:block}
+    .booking-item{background:var(--lighter);border-radius:12px;padding:1.1rem 1.25rem;margin-bottom:.85rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem;border:1px solid #e2e8f0}
+    @media(max-width:768px){.profile-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <div class="logo-icon">KK</div>
+        <div class="logo-text"><span class="brand">KK Tours</span><span class="tagline">Travel &amp; Explore</span></div>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="booking.html">Book a Tour</a></li>
+        <li><a href="admin.html">Admin</a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle">☰</button>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="profile-grid" id="profile-grid">
+      <div class="loading" style="grid-column:1/-1"><div class="spinner"></div></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-logo-wrap">
+      <div class="footer-logo-icon">KK</div>
+      <span class="footer-brand">KK Tours</span>
+    </div>
+    <p>© 2025 KK Tours. All rights reserved.</p>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    if (!auth.isLoggedIn()) window.location.href = 'login.html';
+
+    function initNav() {
+      document.getElementById('nav-toggle').addEventListener('click', () => document.getElementById('nav-links').classList.toggle('open'));
+      updateNavAuth();
+    }
+
+    function switchSection(id) {
+      document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.pnav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.querySelector(`[data-tab="${id}"]`).classList.add('active');
+    }
+
+    async function loadProfile() {
+      const grid = document.getElementById('profile-grid');
+      const user = auth.user();
+      if (!user) { window.location.href = 'login.html'; return; }
+
+      let myBookings = [];
+      try {
+        const res = await api.getBookings();
+        if (res.success) myBookings = res.data.filter(b => b.email === user.email);
+      } catch {}
+
+      grid.innerHTML = `
+        <div class="profile-sidebar">
+          <div class="avatar">${user.name.charAt(0).toUpperCase()}</div>
+          <h3>${user.name}</h3>
+          <p>${user.email}</p>
+          <span class="role-badge">${user.role}</span>
+          <div class="profile-nav">
+            <button class="pnav-btn active" data-tab="sec-info" onclick="switchSection('sec-info')">👤 My Details</button>
+            <button class="pnav-btn" data-tab="sec-edit" onclick="switchSection('sec-edit')">✏️ Edit Profile</button>
+            <button class="pnav-btn" data-tab="sec-bookings" onclick="switchSection('sec-bookings')">📋 Bookings (${myBookings.length})</button>
+            <button class="pnav-btn" onclick="auth.logout()" style="color:#ef4444;margin-top:.5rem">🚪 Logout</button>
+          </div>
+        </div>
+
+        <div class="profile-main">
+          <div class="tab-section active" id="sec-info">
+            <div class="profile-card">
+              <h3>Personal Information</h3>
+              <div class="info-row"><span class="lbl">Full Name</span><span class="val">${user.name}</span></div>
+              <div class="info-row"><span class="lbl">Email</span><span class="val">${user.email}</span></div>
+              <div class="info-row"><span class="lbl">Phone</span><span class="val">${user.phone || '—'}</span></div>
+              <div class="info-row"><span class="lbl">Address</span><span class="val">${user.address || '—'}</span></div>
+              <div class="info-row"><span class="lbl">Account Type</span><span class="val"><span class="badge badge-blue">${user.role}</span></span></div>
+            </div>
+          </div>
+
+          <div class="tab-section" id="sec-edit">
+            <div class="profile-card">
+              <h3>Edit Profile</h3>
+              <div class="alert" id="edit-alert" style="display:none"></div>
+              <form id="edit-form" novalidate>
+                <div class="form-row">
+                  <div class="form-group"><label>Full Name *</label><input type="text" id="edit-name" value="${user.name}" required /></div>
+                  <div class="form-group"><label>Phone</label><input type="tel" id="edit-phone" value="${user.phone || ''}" placeholder="+1 234 567 8900" /></div>
+                </div>
+                <div class="form-group"><label>City / Address</label><input type="text" id="edit-address" value="${user.address || ''}" placeholder="New York, USA" /></div>
+                <button type="submit" class="btn btn-primary" id="edit-btn">Save Changes</button>
+              </form>
+            </div>
+          </div>
+
+          <div class="tab-section" id="sec-bookings">
+            <div class="profile-card">
+              <h3>My Bookings</h3>
+              ${myBookings.length === 0
+                ? `<div class="empty-state"><div class="icon">🎒</div><p>No bookings yet.</p><a href="index.html" class="btn btn-primary">Explore Tours</a></div>`
+                : myBookings.map(b => {
+                    const date = new Date(b.date).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
+                    return `<div class="booking-item">
+                      <div>
+                        <div style="font-weight:700;color:var(--dark);font-size:.9rem;margin-bottom:.2rem">${b.tourId?.title || 'Tour'}</div>
+                        <div style="font-size:.78rem;color:var(--gray)">📍 ${b.tourId?.location || ''} &nbsp;·&nbsp; 📅 ${date} &nbsp;·&nbsp; 👥 ${b.guests || 1} guest(s)</div>
+                      </div>
+                      <span style="font-weight:800;color:var(--primary);font-size:1rem">$${b.tourId?.price ? (b.tourId.price*(b.guests||1)).toLocaleString() : '—'}</span>
+                    </div>`;
+                  }).join('')
+              }
+            </div>
+          </div>
+        </div>`;
+
+      document.getElementById('edit-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('edit-btn');
+        btn.disabled = true; btn.textContent = 'Saving...';
+        const data = { name: document.getElementById('edit-name').value.trim(), phone: document.getElementById('edit-phone').value.trim(), address: document.getElementById('edit-address').value.trim() };
+        try {
+          const res = await fetch('http://localhost:3000/auth/profile', { method:'PUT', headers:{'Content-Type':'application/json','Authorization':`Bearer ${auth.token()}`}, body: JSON.stringify(data) }).then(r => r.json());
+          const el = document.getElementById('edit-alert');
+          if (res.success) {
+            auth.save(auth.token(), {...user, ...data});
+            el.className = 'alert alert-success'; el.textContent = 'Profile updated successfully!'; el.style.display = 'flex';
+            setTimeout(() => location.reload(), 1200);
+          } else { el.className = 'alert alert-error'; el.textContent = res.message; el.style.display = 'flex'; }
+        } catch { const el = document.getElementById('edit-alert'); el.className = 'alert alert-error'; el.textContent = 'Server error.'; el.style.display = 'flex'; }
+        btn.disabled = false; btn.textContent = 'Save Changes';
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => { initNav(); loadProfile(); });
+  </script>
+</body>
+</html>

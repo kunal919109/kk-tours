@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login — KK Tours</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body{background:#f0fdfa;min-height:100vh;display:flex;flex-direction:column}
+    .auth-wrapper{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem 1rem}
+    .auth-card{background:white;border-radius:12px;width:100%;max-width:420px;box-shadow:0 4px 20px rgba(0,0,0,0.1);overflow:hidden;border:1px solid #e2e8f0}
+    .auth-top{background:var(--blue);padding:2rem 1.75rem;text-align:center;position:relative}
+    .auth-top::after{content:"";position:absolute;bottom:-1px;left:0;right:0;height:28px;background:white;border-radius:28px 28px 0 0}
+    .admin-badge{display:inline-flex;align-items:center;gap:.45rem;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:white;padding:.3rem .9rem;border-radius:20px;font-size:.72rem;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:.75rem}
+    .auth-logo-wrap{display:inline-flex;align-items:center;gap:.5rem;margin-bottom:.4rem}
+    .auth-logo-icon{width:40px;height:40px;background:white;color:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem}
+    .auth-logo-text .brand{font-size:1.15rem;font-weight:700;color:white;display:block;line-height:1}
+    .auth-logo-text .tagline{font-size:.6rem;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.5px}
+    .auth-top p{color:rgba(255,255,255,.7);font-size:.82rem;margin-top:.2rem}
+    .auth-body{padding:1.75rem}
+    .auth-body h2{font-size:1.2rem;font-weight:700;color:var(--dark);margin-bottom:.25rem;text-align:center}
+    .auth-body .sub{color:var(--gray);font-size:.82rem;margin-bottom:1.4rem;text-align:center}
+    .pw-wrap{position:relative}
+    .pw-wrap input{padding-right:2.75rem}
+    .pw-toggle{position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:.95rem;color:var(--gray)}
+    .back-link{text-align:center;margin-top:1.1rem;font-size:.82rem;color:var(--gray)}
+    .back-link a{color:var(--blue);font-weight:600}
+    .lock-icon{width:48px;height:48px;background:#ccfbf1;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto .75rem}
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <div class="logo-icon">KK</div>
+        <div class="logo-text"><span class="brand">KK Tours</span><span class="tagline">Travel &amp; Explore</span></div>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="login.html">User Login</a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle">☰</button>
+    </div>
+  </nav>
+
+  <div class="auth-wrapper">
+    <div class="auth-card">
+
+      <div class="auth-top">
+        <div class="admin-badge">🔒 Admin Access</div>
+        <div class="auth-logo-wrap">
+          <div class="auth-logo-icon">KK</div>
+          <div class="auth-logo-text">
+            <span class="brand">KK Tours</span>
+            <span class="tagline">Travel &amp; Explore</span>
+          </div>
+        </div>
+        <p>Restricted to administrators only</p>
+      </div>
+
+      <div class="auth-body">
+        <div class="lock-icon">🛡️</div>
+        <h2 style="text-align:center">Admin Sign In</h2>
+        <p class="sub" style="text-align:center">Enter your admin credentials to continue</p>
+
+        <div class="alert" id="login-alert" style="display:none"></div>
+
+        <form id="admin-login-form" novalidate>
+          <div class="form-group">
+            <label>Admin Email</label>
+            <input type="email" id="email" placeholder="admin@kktours.com" required autocomplete="username" />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <div class="pw-wrap">
+              <input type="password" id="password" placeholder="Enter admin password" required autocomplete="current-password" />
+              <button type="button" class="pw-toggle" onclick="togglePw()">👁</button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg" id="login-btn"
+            style="width:100%;justify-content:center;margin-top:.5rem">
+            Sign In to Dashboard
+          </button>
+        </form>
+
+        <div class="back-link">Not an admin? <a href="login.html">Go to user login →</a></div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    // Redirect if already logged in as admin
+    if (auth.isLoggedIn()) {
+      const u = auth.user();
+      if (u && u.role === 'admin') window.location.href = 'admin.html';
+    }
+
+    document.getElementById('nav-toggle').addEventListener('click', () =>
+      document.getElementById('nav-links').classList.toggle('open'));
+
+    function togglePw() {
+      const i = document.getElementById('password');
+      i.type = i.type === 'password' ? 'text' : 'password';
+    }
+
+    function showAlert(msg, type = 'error') {
+      const el = document.getElementById('login-alert');
+      el.className = `alert alert-${type}`;
+      el.textContent = msg;
+      el.style.display = 'flex';
+    }
+
+    document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('login-btn');
+      btn.disabled = true;
+      btn.textContent = 'Signing in...';
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: document.getElementById('email').value.trim(),
+            password: document.getElementById('password').value,
+          }),
+        }).then(r => r.json());
+
+        if (res.success) {
+          if (res.user.role !== 'admin') {
+            showAlert('Access denied. This portal is for admins only.');
+            btn.disabled = false;
+            btn.textContent = 'Sign In to Dashboard';
+            return;
+          }
+          auth.save(res.token, res.user);
+          window.location.href = 'admin.html';
+        } else {
+          showAlert(res.message || 'Login failed');
+          btn.disabled = false;
+          btn.textContent = 'Sign In to Dashboard';
+        }
+      } catch {
+        showAlert('Cannot connect to server. Is the backend running?');
+        btn.disabled = false;
+        btn.textContent = 'Sign In to Dashboard';
+      }
+    });
+  </script>
+</body>
+</html>

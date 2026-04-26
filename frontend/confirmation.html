@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Booking Confirmed — KK Tours</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <div class="logo-icon">KK</div>
+        <div class="logo-text"><span class="brand">KK Tours</span><span class="tagline">Travel &amp; Explore</span></div>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="booking.html">Book a Tour</a></li>
+        <li><a href="admin.html">Admin</a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle">☰</button>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="confirmation-box">
+      <div class="check-icon">✅</div>
+      <h2>Booking Confirmed!</h2>
+      <p>Your tour has been successfully booked with KK Tours. Here are your details:</p>
+      <div id="confirmation-details" style="text-align:left;margin-bottom:2rem;background:var(--lighter);border-radius:12px;padding:1.25rem"></div>
+      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+        <a href="index.html" class="btn btn-primary">Explore More Tours</a>
+        <a href="booking.html" class="btn-outline">Book Another</a>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-logo-wrap">
+      <div class="footer-logo-icon">KK</div>
+      <span class="footer-brand">KK Tours</span>
+    </div>
+    <p>© 2025 KK Tours. All rights reserved.</p>
+  </footer>
+  <script src="js/api.js"></script>
+  <script src="js/confirmation.js"></script>
+</body>
+</html>

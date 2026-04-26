@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book a Tour — KK Tours</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .booking-page-wrap{max-width:640px;margin:0 auto}
+    .booking-form-card{background:white;border-radius:20px;padding:2.5rem;box-shadow:var(--shadow-lg);border:1px solid rgba(0,0,0,.06)}
+    .tour-summary-bar{background:#f0fdfa;border:1.5px solid #99f6e4;border-radius:8px;padding:.9rem 1.25rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem}
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <div class="logo-icon">KK</div>
+        <div class="logo-text"><span class="brand">KK Tours</span><span class="tagline">Travel &amp; Explore</span></div>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="booking.html" class="active">Book a Tour</a></li>
+        <li><a href="admin.html">Admin</a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle">☰</button>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="booking-page-wrap">
+      <div class="section-title" style="text-align:left;margin-bottom:1.75rem">
+        <div class="section-tag">Reservation</div>
+        <h2>Book Your Tour</h2>
+        <p>Fill in your details to confirm your reservation</p>
+      </div>
+      <div class="tour-summary-bar">
+        <span style="font-weight:700;color:var(--blue);font-size:.92rem" id="tour-name-display">Select a tour below</span>
+        <span style="font-weight:800;color:var(--primary);font-size:1.1rem" id="tour-price-display"></span>
+      </div>
+      <div class="alert" id="form-alert" style="display:none"></div>
+      <div class="booking-form-card">
+        <form id="booking-form" novalidate>
+          <div class="form-row">
+            <div class="form-group"><label>Full Name *</label><input type="text" id="name" placeholder="John Doe" required /></div>
+            <div class="form-group"><label>Email Address *</label><input type="email" id="email" placeholder="john@example.com" required /></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Phone Number</label><input type="tel" id="phone" placeholder="+1 234 567 8900" /></div>
+            <div class="form-group"><label>Number of Guests *</label><input type="number" id="guests" value="1" min="1" max="20" required /></div>
+          </div>
+          <div class="form-group"><label>Select Tour *</label><select id="tourId" required><option value="">-- Loading tours... --</option></select></div>
+          <div class="form-group"><label>Travel Date *</label><input type="date" id="date" required /></div>
+          <button type="submit" class="btn btn-primary btn-lg" id="submit-btn" style="width:100%;justify-content:center;margin-top:.5rem">Confirm Booking</button>
+        </form>
+      </div>
+      <p style="text-align:center;margin-top:1.25rem;color:var(--gray);font-size:.85rem">
+        <a href="index.html" style="color:var(--primary);font-weight:600">← Back to all tours</a>
+      </p>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-logo-wrap">
+      <div class="footer-logo-icon">KK</div>
+      <span class="footer-brand">KK Tours</span>
+    </div>
+    <p>© 2025 KK Tours. All rights reserved.</p>
+  </footer>
+  <script src="js/api.js"></script>
+  <script src="js/booking.js"></script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — KK Tours</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body { background: #f0fdfa; }
+    .auth-wrapper { min-height: calc(100vh - 62px); display: flex; align-items: center; justify-content: center; padding: 2rem 1rem; }
+    .auth-card { background: white; border-radius: 12px; width: 100%; max-width: 420px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; overflow: hidden; }
+    .auth-top { background: var(--blue); padding: 2rem 1.75rem; text-align: center; }
+    .auth-logo-wrap { display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+    .auth-logo-icon { width: 40px; height: 40px; background: white; color: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; }
+    .auth-logo-text .brand { font-size: 1.15rem; font-weight: 700; color: white; display: block; line-height: 1; }
+    .auth-logo-text .tagline { font-size: 0.6rem; color: rgba(255,255,255,0.65); text-transform: uppercase; letter-spacing: 0.5px; }
+    .auth-top p { color: rgba(255,255,255,0.75); font-size: 0.83rem; margin-top: 0.25rem; }
+    .auth-body { padding: 1.75rem; }
+    .auth-body h2 { font-size: 1.25rem; font-weight: 700; color: var(--dark); margin-bottom: 0.25rem; }
+    .auth-body .sub { color: var(--gray); font-size: 0.83rem; margin-bottom: 1.5rem; }
+    .divider { display: flex; align-items: center; gap: 0.75rem; margin: 1.25rem 0; color: var(--gray); font-size: 0.78rem; }
+    .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+    .auth-switch { text-align: center; margin-top: 1.25rem; font-size: 0.83rem; color: var(--gray); }
+    .auth-switch a { color: var(--blue); font-weight: 600; }
+    .pw-wrap { position: relative; }
+    .pw-wrap input { padding-right: 2.75rem; }
+    .pw-toggle { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 0.95rem; color: var(--gray); }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <div class="logo-icon">KK</div>
+        <div class="logo-text"><span class="brand">KK Tours</span><span class="tagline">Travel &amp; Explore</span></div>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="register.html">Register</a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle">☰</button>
+    </div>
+  </nav>
+
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-top">
+        <div class="auth-logo-wrap">
+          <div class="auth-logo-icon">KK</div>
+          <div class="auth-logo-text"><span class="brand">KK Tours</span><span class="tagline">Travel &amp; Explore</span></div>
+        </div>
+        <p>Your adventure awaits</p>
+      </div>
+      <div class="auth-body">
+        <h2>Welcome back 👋</h2>
+        <p class="sub">Sign in to your account</p>
+        <div class="alert" id="login-alert" style="display:none"></div>
+        <form id="login-form" novalidate>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="email" placeholder="you@example.com" required />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <div class="pw-wrap">
+              <input type="password" id="password" placeholder="Enter your password" required />
+              <button type="button" class="pw-toggle" onclick="togglePw()">👁</button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg" id="login-btn" style="width:100%;justify-content:center;margin-top:0.5rem">Sign In</button>
+        </form>
+        <div class="divider">or</div>
+        <div class="auth-switch">Don't have an account? <a href="register.html">Register here</a></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    if (auth.isLoggedIn()) window.location.href = 'index.html';
+    document.getElementById('nav-toggle').addEventListener('click', () =>
+      document.getElementById('nav-links').classList.toggle('open'));
+
+    function togglePw() {
+      const i = document.getElementById('password');
+      i.type = i.type === 'password' ? 'text' : 'password';
+    }
+
+    function showAlert(msg, type = 'error') {
+      const el = document.getElementById('login-alert');
+      el.className = `alert alert-${type}`;
+      el.textContent = msg;
+      el.style.display = 'flex';
+    }
+
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('login-btn');
+      btn.disabled = true; btn.textContent = 'Signing in...';
+      try {
+        const res = await fetch(`${API_BASE}/auth/login`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: document.getElementById('email').value.trim(), password: document.getElementById('password').value })
+        }).then(r => r.json());
+        if (res.success) { auth.save(res.token, res.user); window.location.href = 'index.html'; }
+        else { showAlert(res.message || 'Login failed'); btn.disabled = false; btn.textContent = 'Sign In'; }
+      } catch { showAlert('Cannot connect to server.'); btn.disabled = false; btn.textContent = 'Sign In'; }
+    });
+  </script>
+</body>
+</html>
