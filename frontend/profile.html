@@ -154,7 +154,7 @@
         btn.disabled = true; btn.textContent = 'Saving...';
         const data = { name: document.getElementById('edit-name').value.trim(), phone: document.getElementById('edit-phone').value.trim(), address: document.getElementById('edit-address').value.trim() };
         try {
-          const res = await fetch('http://localhost:3000/auth/profile', { method:'PUT', headers:{'Content-Type':'application/json','Authorization':`Bearer ${auth.token()}`}, body: JSON.stringify(data) }).then(r => r.json());
+          const res = await fetch(`${API_BASE}/auth/profile`, { method:'PUT', headers:{'Content-Type':'application/json','Authorization':`Bearer ${auth.token()}`}, body: JSON.stringify(data) }).then(r => r.json());
           const el = document.getElementById('edit-alert');
           if (res.success) {
             auth.save(auth.token(), {...user, ...data});

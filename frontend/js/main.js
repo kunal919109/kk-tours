@@ -18,7 +18,7 @@ async function loadTours() {
     }
     grid.innerHTML = res.data.map(tourCard).join('');
   } catch {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="icon">⚠️</div><p>Could not connect to server. Make sure the backend is running on port 3000.</p></div>`;
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="icon">⚠️</div><p>Could not load tours. Please try again later.</p></div>`;
   }
 }
 
