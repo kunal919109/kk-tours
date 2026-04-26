@@ -10,7 +10,6 @@ const authRoutes = require('../routes/authRoutes');
 
 const app = express();
 
-// CORS — allow all origins (required for Vercel serverless)
 app.use(cors());
 app.use(express.json());
 
@@ -19,22 +18,25 @@ app.use('/bookings', bookingRoutes);
 app.use('/auth', authRoutes);
 
 app.get('/', (req, res) => {
-  res.json({ success: true, message: 'KK Tours API is running' });
+  res.json({ success: true, message: 'KK Tours API is running', db: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected' });
 });
 
-// MongoDB — reuse connection across serverless invocations
 let isConnected = false;
 
 async function connectDB() {
   if (isConnected) return;
+  if (!process.env.MONGO_URI) throw new Error('MONGO_URI environment variable is not set on Vercel');
   await mongoose.connect(process.env.MONGO_URI);
   isConnected = true;
-  console.log('MongoDB connected');
 }
 
 const handler = serverless(app);
 
 module.exports = async (req, res) => {
-  await connectDB();
+  try {
+    await connectDB();
+  } catch (err) {
+    return res.status(500).json({ success: false, message: 'DB connection failed: ' + err.message });
+  }
   return handler(req, res);
 };
